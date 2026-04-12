@@ -1,0 +1,60 @@
+# Energy Price Monitoring Project
+
+This is a small learning project built to practice working with data pipelines, web applications, and Docker.
+
+The project fetches electricity price data from Energinet, processes the data in Python, applies anomaly detection, and shows the results in a simple dashboard.
+
+## Features
+
+* Fetches electricity price data from Energinet API
+* Processes and sorts time-series data
+* Detects unusual price patterns
+* Stores results in SQLite
+* Displays results in a small Flask dashboard
+* Can run locally or in Docker
+
+## Tech Stack
+
+* Python
+* Flask
+* Pandas
+* Scikit-learn
+* SQLite
+* Chart.js
+* Docker
+
+## Run locally
+
+```bash
+python -m api.app
+```
+
+Then open:
+
+```text
+http://127.0.0.1:5000/
+```
+
+## Run with Docker
+
+```bash
+docker build -t energy-ai-platform .
+docker run -p 5000:5000 energy-ai-platform
+```
+
+## Purpose
+
+The purpose of the project was to practice working with:
+
+* API data ingestion
+* preprocessing
+* anomaly detection
+* databases
+* web development
+* Docker
+
+## Author
+
+Oliver Thybo
+MSc Data Science – SDU
+

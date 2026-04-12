@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Energy AI Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1f2937;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            padding: 20px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background-color: #1e40af;
+        }
+
+        #status-text {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #e5e7eb;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        .anomaly {
+            color: red;
+            font-weight: bold;
+        }
+
+        .normal {
+            color: green;
+        }
+    </style>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<body>
+
+<header>
+    <h1>⚡ Energy Price Monitoring Platform</h1>
+    <p>AI-powered anomaly detection</p>
+</header>
+
+<main>
+    <div class="card">
+        <button onclick="runAnalysis()">Run Analysis</button>
+        <p id="status-text"></p>
+
+        <h2>Latest Results</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Time</th>
+                    <th>Price (DKK)</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="results-table"></tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Price Chart</h2>
+        <canvas id="priceChart"></canvas>
+    </div>
+</main>
+
+<script>
+    let chart;
+
+    async function runAnalysis() {
+        const status = document.getElementById('status-text');
+        status.textContent = 'Running analysis...';
+
+        await fetch('/prices');
+        await loadResults();
+
+        status.textContent = 'Analysis completed.';
+    }
+
+    async function loadResults() {
+        const res = await fetch('/results');
+        const data = await res.json();
+
+        const table = document.getElementById('results-table');
+        table.innerHTML = '';
+
+        const latestData = data.slice(0, 50).reverse();
+
+        latestData.forEach(row => {
+            const tr = document.createElement('tr');
+
+            const statusClass = row.anomaly === 1 ? "anomaly" : "normal";
+            const statusText = row.anomaly === 1 ? "Anomaly" : "Normal";
+
+            tr.innerHTML = `
+                <td>${row.id}</td>
+                <td>${row.time_dk}</td>
+                <td>${row.price.toFixed(2)}</td>
+                <td class="${statusClass}">${statusText}</td>
+            `;
+
+            table.appendChild(tr);
+        });
+
+        drawChart(latestData);
+    }
+
+    function drawChart(data) {
+        const ctx = document.getElementById('priceChart').getContext('2d');
+
+        const labels = data.map(row => row.time_dk);
+        const prices = data.map(row => row.price);
+        const anomalyPoints = data.map(row => row.anomaly === 1 ? row.price : null);
+
+        if (chart) {
+            chart.destroy();
+        }
+
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Price',
+                        data: prices,
+                        borderColor: 'blue',
+                        backgroundColor: 'rgba(0,0,255,0.1)',
+                        tension: 0.2
+                    },
+                    {
+                        label: 'Anomalies',
+                        data: anomalyPoints,
+                        type: 'scatter',
+                        backgroundColor: 'red',
+                        borderColor: 'red',
+                        pointRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        ticks: {
+                            maxTicksLimit: 8
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    loadResults();
+</script>
+
+</body>
+</html>
