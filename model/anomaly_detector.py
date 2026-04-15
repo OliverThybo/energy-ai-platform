@@ -1,7 +1,7 @@
 from sklearn.ensemble import IsolationForest
 
 def detect_anomalies(df):
-    model = IsolationForest()
+    model = IsolationForest(contamination=0.05, random_state=42)
 
     model.fit(df[["DayAheadPriceDKK"]])
 
