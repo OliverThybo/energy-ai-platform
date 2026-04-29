@@ -94,6 +94,8 @@
     <div class="card">
         <button onclick="runAnalysis()">Run Analysis</button>
         <p id="status-text"></p>
+              <button onclick="getExplanation()">Explain with AI</button>
+<p id="explanation-text" style="color: #374151; margin-top: 10px;"></p>
 
         <h2>Latest Results</h2>
         <table>
@@ -203,6 +205,12 @@
     }
 
     loadResults();
+
+    async function getExplanation() {
+    const res = await fetch('/explain');
+    const data = await res.json();
+    document.getElementById('explanation-text').textContent = data.explanation;
+}
 </script>
 
 </body>

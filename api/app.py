@@ -3,6 +3,7 @@ from data_ingestion.fetcher import fetch_prices
 from preprocessing.preprocessing import preprocess
 from model.anomaly_detector import detect_anomalies
 from db import init_db, save_results, get_results
+from model.explainer import explain_results
 
 
 app = Flask(__name__)
@@ -34,6 +35,15 @@ def get_prices():
 def results():
     data = get_results()
     return jsonify(data)
+
+
+@app.route("/explain")
+def explain():
+    records = fetch_prices()
+    df = preprocess(records)
+    df = detect_anomalies(df)
+    explanation = explain_results(df)
+    return jsonify({"explanation": explanation})
     
     
 
