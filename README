@@ -1,60 +1,57 @@
-# Energy Price Monitoring Project
+#  Energy Price Monitoring AI Platform
 
-This is a small learning project built to practice working with data pipelines, web applications, and Docker.
+A real-time electricity price monitoring platform with AI-powered anomaly detection and natural language explanations.
 
-The project fetches electricity price data from Energinet, processes the data in Python, applies anomaly detection, and shows the results in a simple dashboard.
-
-## Features
-
-* Fetches electricity price data from Energinet API
-* Processes and sorts time-series data
-* Detects unusual price patterns
-* Stores results in SQLite
-* Displays results in a small Flask dashboard
-* Can run locally or in Docker
+## What it does
+- Fetches electricity spot prices from the Energinet API (DK1 area)
+- Detects anomalies using Isolation Forest (scikit-learn)
+- Exposes a REST API built with Flask
+- Stores results in a SQLite database
+- Explains findings in plain English using Groq (Llama 3)
 
 ## Tech Stack
+- Python, Flask, pandas, scikit-learn
+- SQLite for storage
+- Groq API (Llama 3) for AI explanations
+- HTML, CSS, JavaScript + Chart.js for frontend
+- Docker for containerization
 
-* Python
-* Flask
-* Pandas
-* Scikit-learn
-* SQLite
-* Chart.js
-* Docker
+## How to run
+1. Clone the repo
+   ```
+   git clone https://github.com/OliverThybo/energy-ai-platform.git
+   ```
+2. Install dependencies
+   ```
+   pip install -r requirements.txt
+   ```
+3. Create a `.env` file and add your Groq API key
+   ```
+   GROQ_API_KEY=your_key_here
+   ```
+4. Run the app
+   ```
+   python -m api.app
+   ```
+5. Open your browser at `http://localhost:5000`
 
-## Run locally
+## API Endpoints
+| Endpoint | Description |
+|----------|-------------|
+| `GET /` | Frontend dashboard |
+| `GET /prices` | Fetch, analyze and store latest prices |
+| `GET /results` | Get stored results from database |
+| `GET /explain` | Get AI explanation of latest analysis |
 
-```bash
-python -m api.app
+## Project Structure
 ```
-
-Then open:
-
-```text
-http://127.0.0.1:5000/
+energy-ai-platform/
+├── data_ingestion/      # Fetches data from Energinet API
+├── preprocessing/       # Cleans and formats data
+├── model/               # Anomaly detection + AI explanation
+├── api/                 # Flask REST API + frontend
+├── db.py                # SQLite database logic
+├── Dockerfile           # Container configuration
+└── requirements.txt     # Python dependencies
 ```
-
-## Run with Docker
-
-```bash
-docker build -t energy-ai-platform .
-docker run -p 5000:5000 energy-ai-platform
-```
-
-## Purpose
-
-The purpose of the project was to practice working with:
-
-* API data ingestion
-* preprocessing
-* anomaly detection
-* databases
-* web development
-* Docker
-
-## Author
-
-Oliver Thybo
-MSc Data Science – SDU
 
